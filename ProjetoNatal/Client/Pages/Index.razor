@@ -1,0 +1,131 @@
+﻿@page "/"
+@inject HttpClient Http
+@using System;
+@using System.Collections.Generic;
+
+@using System.ComponentModel.DataAnnotations
+@using ProjetoNatal.Shared
+
+<PageTitle>Familiar secreto</PageTitle>
+
+@if (success == false)
+{
+    <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" sm="7">
+                <MudCardContent>
+                    <MudTextField Label="Nome"
+                              @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Palavra-passe" Class="mt-3"
+                              @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Entrar</MudButton>
+                </MudCardActions>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+
+@if (success == true)
+{
+    @if (userAtual.alvo == string.Empty)
+    {
+        <MudButton OnClick="EscolherAlvo" Variant="Variant.Filled" Color="Color.Primary" Style="color: white; width: 100%; height: 60px; margin-top: 200px;">
+            @if (_processing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">A atribuir...</MudText>
+            }
+            else
+            {
+                <MudText>Clica aqui</MudText>
+            }
+        </MudButton>
+    }
+    else
+    {
+        <MudText Style="margin-top: 200px; text-align: center;">O teu familiar secreto é <b>@userAtual.alvo</b>.</MudText>
+
+        <MudText Style="text-align: center;">A prenda deve ter um valor até <b>20€</b>.</MudText>
+
+        <MudText Style="text-align: center;">Não te esqueças, guarda segredo. <b>Shiuuuu!</b></MudText>
+    }
+
+}
+
+@code {
+
+    LoginAccountForm model = new LoginAccountForm();
+    bool success;
+    bool gerar = true;
+    List<User> users = new List<User>();
+    private bool _processing = false;
+    private User userAtual = new User();
+
+    List<string> nomeUsers = new List<string>();
+
+    public class LoginAccountForm
+    {
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await Http.GetFromJsonAsync<List<User>>("User");
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        Console.WriteLine("OnValidSubmit");
+
+        foreach (var i in users)
+        {
+            if (i.nome == model.Username && i.passe == model.Password)
+            {
+                userAtual = i;
+                Console.WriteLine("Existo");
+                success = true;
+                StateHasChanged();
+            }
+        }
+    }
+
+    async Task EscolherAlvo()
+    {
+        var random = new Random();
+        _processing = true;
+
+        List<string> alvos = new List<string>();
+
+        foreach (var i in users)
+        {
+            alvos.Add(i.alvo);
+        }
+
+        if (userAtual.alvo == string.Empty)
+        {
+            while (gerar)
+            {
+                int index = random.Next(users.Count());
+                if (alvos.Contains(users[index].nome) == false && users[index].familia != userAtual.familia)
+                {
+                    userAtual.alvo = users[index].nome;
+                    await Http.PutAsJsonAsync<User>("User", userAtual);
+                    gerar = false;
+                    //t = t + 1;
+                }
+            }
+        }
+
+        await Task.Delay(2000);
+
+        _processing = false;
+    }
+}

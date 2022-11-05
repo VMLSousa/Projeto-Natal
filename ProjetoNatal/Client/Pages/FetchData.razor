@@ -1,0 +1,49 @@
+﻿@page "/fetchdata"
+@using ProjetoNatal.Shared
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Passe</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in users)
+            {
+                <tr>
+                    <td>@forecast.nome</td>
+                    <td>@forecast.passe</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+    
+    List<User> users = new List<User>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+
+        users = await Http.GetFromJsonAsync<List<User>>("User");
+    }
+}
