@@ -1,5 +1,4 @@
 ﻿@page "/fetchdata"
-@using ProjetoNatal.Shared
 @inject HttpClient Http
 
 <PageTitle>Weather forecast</PageTitle>
@@ -8,7 +7,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (users == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -36,14 +35,11 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
     
     List<User> users = new List<User>();
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
-
         users = await Http.GetFromJsonAsync<List<User>>("User");
     }
 }
