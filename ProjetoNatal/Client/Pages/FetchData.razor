@@ -1,4 +1,5 @@
-﻿@page "/fetchdata"
+@page "/fetchdata"
+@using ProjetoNatal.Client
 @inject HttpClient Http
 
 <PageTitle>Weather forecast</PageTitle>
@@ -35,7 +36,7 @@ else
 }
 
 @code {
-    
+
     List<User> users = new List<User>();
 
     protected override async Task OnInitializedAsync()
