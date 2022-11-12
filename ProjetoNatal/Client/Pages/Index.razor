@@ -24,6 +24,19 @@
                 </MudCardActions>
             </MudItem>
         </MudGrid>
+
+        @if(dadosErrados == true)
+        {
+            <MudGrid>
+                <MudItem xs="12" sm="7">
+                    <MudText Style="margin-top: 100px; color: red; text-align: center;">Nome ou palavra-passe errados.</MudText>
+                    @if(contagem >= 30){
+                        <MudText Style="margin-top: 20px; color: red; text-align: center;">Hmm parece que não estas a conseguir, contacta o teu primo/sobrinho. :) </MudText>
+                    }                   
+                </MudItem>
+            </MudGrid>
+        }
+
     </EditForm>
 }
 
@@ -52,15 +65,16 @@
         <MudText Style="text-align: center;">Não te esqueças, guarda segredo. <b>Shiuuuu!</b></MudText>
     }
 
-<MudButton OnClick="Sair" Variant="Variant.Filled" Color="Color.Primary" Style="color: white; width: 100%; height: 60px; margin-top: 100px;">Sair</MudButton>
-
+    <MudButton OnClick="Sair" Variant="Variant.Filled" Color="Color.Primary" Style="color: white; width: 100%; height: 60px; margin-top: 100px;">Sair</MudButton>
 }
 
 @code {
 
     LoginAccountForm model = new LoginAccountForm();
     bool success;
+    bool dadosErrados = false;
     bool gerar = true;
+    int contagem = 0;
     List<User> users = new List<User>();
     private bool _processing = false;
     private User userAtual = new User();
@@ -92,12 +106,19 @@
             {
                 userAtual = i;
                 Console.WriteLine("Existo");
-                success = true;
+                contagem = 0;
+                success = true; 
                 StateHasChanged();
+            }
+            else
+            {
+                contagem = contagem + 1;
+                Console.WriteLine(contagem);
+                dadosErrados = true;
             }
         }
     }
-        
+
     async Task Sair()
     {
         success = false;
@@ -120,7 +141,7 @@
             while (gerar)
             {
                 int index = random.Next(users.Count());
-                if (alvos.Contains(users[index].nome) == false && users[index].familia != userAtual.familia)
+                if (alvos.Contains(users[index].nome) == false)
                 {
                     userAtual.alvo = users[index].nome;
                     await Http.PutAsJsonAsync<User>("User", userAtual);
