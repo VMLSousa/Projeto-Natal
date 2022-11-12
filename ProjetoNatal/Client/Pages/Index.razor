@@ -77,7 +77,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        users = await Http.GetFromJsonAsync<List<User>>("User");
+        users = await Http.GetFromJsonAsync<List<User>>("Users");
     }
 
     private void OnValidSubmit(EditContext context)
