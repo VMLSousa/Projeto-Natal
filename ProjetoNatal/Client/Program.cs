@@ -7,7 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://webapiprojetonatal.azurewebsites.net") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://natalapi-production.up.railway.app") });
 builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();
