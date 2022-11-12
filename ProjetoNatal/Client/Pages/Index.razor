@@ -146,7 +146,6 @@
                     userAtual.alvo = users[index].nome;
                     await Http.PutAsJsonAsync<User>("User", userAtual);
                     gerar = false;
-                    //t = t + 1;
                 }
             }
         }
