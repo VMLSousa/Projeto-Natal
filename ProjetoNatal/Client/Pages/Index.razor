@@ -1,11 +1,12 @@
 @page "/"
 @inject HttpClient Http
+@inject NavigationManager NavManager
 @using System;
 @using System.Collections.Generic;
 
 @using System.ComponentModel.DataAnnotations
 
-<PageTitle>Familiar secreto</PageTitle>
+<PageTitle>Familiar secreto V.1</PageTitle>
 
 @if (success == false)
 {
@@ -121,7 +122,7 @@
 
     async Task Sair()
     {
-        success = false;
+        NavManager.NavigateTo("/", forceLoad: true);
     }
 
     async Task EscolherAlvo()
@@ -133,7 +134,7 @@
 
         foreach (var i in users)
         {
-            alvos.Add(i.alvo);
+            alvos.Add(i.alvo);         
         }
 
         if (userAtual.alvo == string.Empty)
@@ -141,11 +142,12 @@
             while (gerar)
             {
                 int index = random.Next(users.Count());
-                if (alvos.Contains(users[index].nome) == false)
+                if (alvos.Contains(users[index].nome) == false && userAtual.nome != users[index].nome)
                 {
                     userAtual.alvo = users[index].nome;
                     await Http.PutAsJsonAsync<User>("User", userAtual);
                     gerar = false;
+                    //t = t + 1;
                 }
             }
         }
